@@ -37,6 +37,37 @@ export class ShoppingService {
 		const order: IOrderSchema = await this.createOrder(orderDetails);
 	}
 
+	async getOrders(userId: string) {
+		const orders = await this.getOrdersByUserId(userId)
+		if(!orders.length) throw new Error(ShoppingServiceErrors.NO_ORDERS_FOUND)
+	}
+
+	async getCart(userId:string){
+		const cart = await this.findCartByUserId(userId)
+		if(!cart) throw new Error(ShoppingServiceErrors.CART_EMPTY)
+	}
+
+	async addItemToCart(userId:string,itemId:string,itemQuantity:number){
+		const cart = await this.findCartByUserId(userId)
+		if(!cart){
+			const newCart = this.createCart(userId,itemId,itemQuantity)
+		}
+	}
+
+	async deleteItemFromCart(userId:string,itemId:string,itemQuantity:number){
+		const cart = await this.findCartByUserId(userId)
+		if(!cart){
+			const newCart = this.createCart(userId,itemId,itemQuantity)
+		}
+	}
+
+	async deleteCart(cartId:string){
+	}
+
+	private async getOrdersByUserId(userId: string) {
+		return this.orderSchema.find({ userId: userId });
+	}
+
 	private async findCartByUserId(userId: string) {
 		return this.cartSchema.findOne({ userId: userId });
 	}
@@ -46,6 +77,12 @@ export class ShoppingService {
 	private async createOrder(orderDetails: IOrderCreationDetails) {
 		return this.orderSchema.create(orderDetails);
 	}
+
+	private async createCart(userId:string,itemId:string,ItemQuantity:number){
+		//get Item using Item ID
+		//create cart
+	}
+
 }
 
 export interface IOrderCreationDetails {
@@ -58,6 +95,7 @@ export interface IOrderCreationDetails {
 export enum ShoppingServiceErrors {
 	CART_NOT_FOUND = "Cart Not Found",
 	CART_EMPTY = "Cart is Empty",
+	NO_ORDERS_FOUND = "No Orders Found"
 }
 
 export enum OrderStatus {
